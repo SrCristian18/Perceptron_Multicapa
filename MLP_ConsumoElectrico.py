@@ -86,7 +86,7 @@ class PerceptronMLP:
 
 #inicio de las pruebas
 # definir la estructura
-estructura = [2,10,10,1]
+estructura = [2,12,18,1]
 perceptron = PerceptronMLP(estructura)
 
 #entrenar la red
@@ -94,7 +94,7 @@ perceptron.entrenar(entradas, salidas, iteraciones=10000, tasa_aprendizaje=0.01)
 
 #proponer una salida esperada
 
-dia = 3
-hora = 15
-prediccion = perceptron.retropropagacion(np.array([[hora, dia]]))
+dia = 2
+hora = 3
+prediccion = perceptron.propagacion(np.array([[hora, dia]]))
 print(f"El consumo para el día {dia} a las {hora}:00: {prediccion[0][0]}")
