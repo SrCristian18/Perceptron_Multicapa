@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 # lectura del archivo
 
@@ -76,25 +77,59 @@ class PerceptronMLP:
             self.pesos[i] += np.dot(self.activaciones[i].T, delta) * tasa_aprendizaje
             self.sesgos[i] += np.sum(delta, axis = 0, keepdims=True) * tasa_aprendizaje
         errores.reverse()
-        return errores
+        return errores[0]
     
     def entrenar(self, datos_entrada, datos_salida, iteraciones, tasa_aprendizaje):
+        errores_totales = []
         for _ in range(iteraciones):
             salida_predicha = self.propagacion(datos_entrada)
-            self.retropropagacion(datos_salida, tasa_aprendizaje)
-
+            error_actual = self.retropropagacion(datos_salida, tasa_aprendizaje)
+            error_promedio = np.mean(np.abs(error_actual))
+            errores_totales.append(error_promedio)
+        return errores_totales
 
 #inicio de las pruebas
 # definir la estructura
-estructura = [2,12,18,1]
+estructura = [2,10,10,1]
 perceptron = PerceptronMLP(estructura)
+iteraciones = 10000
+tasa_aprendizaje = 0.01
 
 #entrenar la red
-perceptron.entrenar(entradas, salidas, iteraciones=10000, tasa_aprendizaje=0.01)
+errores_totales = perceptron.entrenar(entradas, salidas, iteraciones, tasa_aprendizaje)
 
 #proponer una salida esperada
 
-dia = 2
-hora = 3
-prediccion = perceptron.propagacion(np.array([[hora, dia]]))
-print(f"El consumo para el día {dia} a las {hora}:00: {prediccion[0][0]}")
+#dia = 2
+#hora = 3
+#prediccion = perceptron.propagacion(np.array([[hora, dia]]))
+#print(f"El consumo para el día {dia} a las {hora}:00: {prediccion[0][0]}")
+
+#Grafica 1: error total de la red durante el aprendizaje
+plt.figure(figsize=(10,6))
+plt.plot(errores_totales)
+plt.title('Evolución del error durante el entrenamiento')
+plt.xlabel('Iteraciones')
+plt.ylabel('Error promedio absoluto')
+plt.grid(True)
+plt.show()
+
+#obtener una prediccion
+predicciones = perceptron.propagacion(entradas)
+
+#grafica 2
+plt.figure(figsize=(10, 6))
+
+# Consumo real (valores del archivo .txt)
+plt.plot(salidas, label='Consumo Real', color='blue')
+
+# Consumo predicho por la red neuronal
+plt.plot(predicciones, label='Consumo Predicho', color='red', linestyle='--')
+
+# Detalles de la gráfica
+plt.title('Comparación entre el Consumo Real y el Consumo Predicho')
+plt.xlabel('Muestras (Combinaciones de Día y Hora)')
+plt.ylabel('Consumo Eléctrico')
+plt.legend()
+plt.grid(True)
+plt.show()
