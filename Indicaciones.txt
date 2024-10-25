@@ -1,0 +1,5 @@
+- Se debe tener instalada la librería matplolib y numpy
+- El archivo de datos contiene los valores de consumo sin normalizar;
+la normalización se realiza dentro del código, pero si se quiere ver tabulados
+dentro del pdf, hay un link que redirige a una tabla de excel donde se puede ver
+los valores sin normalizar y normalizados.
