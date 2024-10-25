@@ -12,7 +12,7 @@ def leer_datos(archivo):
 
     return np.array(datos)
 
-#normalizar los valores a la escala de 0 y 1
+#normalizar los valores a la escala de 0 y 1 dividiendo entre 3.0 los valores del .txt
 def normalizar_datos(datos):
     return datos / 3.0
 
@@ -40,8 +40,7 @@ for hora in range(24):
 entradas = np.array(entradas)
 salidas = np.array(salidas).reshape(-1, 1)
 
-# definicion de la clase
-
+# Definicion de la clase de la red MLP
 class PerceptronMLP:
     def __init__(self, estructura):
         self.pesos = []
@@ -53,13 +52,15 @@ class PerceptronMLP:
             sesgo = np.random.rand(1,estructura[i+1]) - 0.5
             self.pesos.append(peso)
             self.sesgos.append(sesgo)
-
+#funcion de activacion sigmoide
     def sigmoid(self, x):
         return 1/(1+np.exp(-x))
-    
+
+#derivada de la funcion sigmoide
     def sigmoid_derivada(self, x):
         return x * (1-x)
-    
+
+#algoritmo de propagación hacia adelante    
     def propagacion(self, entrada):
         self.activaciones = [entrada]
         for peso, sesgo in zip(self.pesos, self.sesgos):
@@ -68,6 +69,7 @@ class PerceptronMLP:
             self.activaciones.append(a)
         return self.activaciones[-1]
     
+#algoritmo de propagación hacia atrás (retropropagación)
     def retropropagacion(self, salida_esperada, tasa_aprendizaje):
         errores = [salida_esperada - self.activaciones[-1]]
         for i in reversed(range(len(self.pesos))):
@@ -79,6 +81,7 @@ class PerceptronMLP:
         errores.reverse()
         return errores[0]
     
+#función para el entrenamiento de la red
     def entrenar(self, datos_entrada, datos_salida, iteraciones, tasa_aprendizaje):
         errores_totales = []
         for _ in range(iteraciones):
@@ -88,6 +91,7 @@ class PerceptronMLP:
             errores_totales.append(error_promedio)
         return errores_totales
 
+#funcion para recibir entradas y regresar la salida esperada (la predicción de la red)
     def predecir(self, dia, hora):
         entrada = np.array([[hora, dia]])
         prediccion = self.propagacion(entrada)
@@ -97,24 +101,17 @@ class PerceptronMLP:
 
 #inicio de las pruebas
 # definir la estructura
-estructura = [2,10,10,1]
+estructura = [2,10,10,1] #las capas se adaptan en base a lo que desarrollador necesite y crea pertienente
 perceptron = PerceptronMLP(estructura)
 iteraciones = 10000
 tasa_aprendizaje = 0.01
 
-
+#ingreso de variables de entrada para proponer y lograr una predicción
 dia_usuario = int(input("Ingrese un dia de la semana (0 a 6): "))
 hora_usuario = int(input("Ingrese la hora del día (1 a 24): "))
 
 #entrenar la red
 errores_totales = perceptron.entrenar(entradas, salidas, iteraciones, tasa_aprendizaje)
-
-#proponer una salida esperada
-
-#dia = 2
-#hora = 3
-#prediccion = perceptron.propagacion(np.array([[hora, dia]]))
-#print(f"El consumo para el día {dia} a las {hora}:00: {prediccion[0][0]}")
 
 #Grafica 1: error total de la red durante el aprendizaje
 plt.figure(figsize=(10,6))
@@ -125,10 +122,10 @@ plt.ylabel('Error promedio absoluto')
 plt.grid(True)
 plt.show()
 
-#obtener una prediccion
+#obtener una prediccion para la grafica 2
 predicciones = perceptron.propagacion(entradas)
 
-#grafica 2
+#grafica 2: consumo real vs consumo estimado
 plt.figure(figsize=(10, 6))
 
 # Consumo real (valores del archivo .txt)
@@ -138,7 +135,7 @@ plt.plot(salidas, label='Consumo Real', color='blue')
 plt.plot(predicciones, label='Consumo Predicho', color='red', linestyle='--')
 
 # Detalles de la gráfica
-plt.title('Comparación entre el Consumo Real y el Consumo Predicho')
+plt.title('Consumo Real vs Consumo estimado')
 plt.xlabel('Muestras (Combinaciones de Día y Hora)')
 plt.ylabel('Consumo Eléctrico')
 plt.legend()
