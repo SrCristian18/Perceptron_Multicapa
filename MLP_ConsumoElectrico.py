@@ -88,12 +88,23 @@ class PerceptronMLP:
             errores_totales.append(error_promedio)
         return errores_totales
 
+    def predecir(self, dia, hora):
+        entrada = np.array([[hora, dia]])
+        prediccion = self.propagacion(entrada)
+        return prediccion[0][0]
+
+    
+
 #inicio de las pruebas
 # definir la estructura
 estructura = [2,10,10,1]
 perceptron = PerceptronMLP(estructura)
 iteraciones = 10000
 tasa_aprendizaje = 0.01
+
+
+dia_usuario = int(input("Ingrese un dia de la semana (0 a 6): "))
+hora_usuario = int(input("Ingrese la hora del día (1 a 24): "))
 
 #entrenar la red
 errores_totales = perceptron.entrenar(entradas, salidas, iteraciones, tasa_aprendizaje)
@@ -133,3 +144,6 @@ plt.ylabel('Consumo Eléctrico')
 plt.legend()
 plt.grid(True)
 plt.show()
+
+prediccion_usuario = perceptron.predecir(dia_usuario, hora_usuario)
+print(f"El consumo electrico en el dia {dia_usuario} a las {hora_usuario}:00 es: {prediccion_usuario:.4f}")
